@@ -5,7 +5,7 @@
         "type": "Feature",
         "properties": {
           "name": "Zone 1",
-          "description": "Une zone d'intérêt à Tataouine.",
+          "description": "Une zone d'intérêt à medenine.",
           "status": 1
         },
         "geometry": {
@@ -25,7 +25,7 @@
         "type": "Feature",
         "properties": {
           "name": "Zone 2",
-          "description": "Une autre zone d'intérêt à Tataouine.",
+          "description": "Une autre zone d'intérêt à medenine.",
           "status": 2
         },
         "geometry": {
