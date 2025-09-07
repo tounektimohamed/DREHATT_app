@@ -1,0 +1,113 @@
+import 'dart:typed_data';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:DREHATT_app/screens2/jeojson/SigWeb.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  setUpAll(() async {
+    // Initialiser Firebase fake
+    await Firebase.initializeApp(
+      options: const FirebaseOptions(
+        apiKey: 'fake',
+        appId: 'fake',
+        messagingSenderId: 'fake',
+        projectId: 'fake',
+      ),
+    );
+  });
+
+  testWidgets('SigWeb renders correctly', (WidgetTester tester) async {
+    final mockStorage = MockGeoJsonStorage();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: SigWeb(title: 'Test SigWeb', storage: mockStorage),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    // Vérifier AppBar et boutons
+    expect(find.text('Suivi des PAUS'), findsOneWidget);
+    expect(find.byTooltip('Afficher HTML Local'), findsOneWidget);
+    expect(find.byTooltip('Gérer les pages HTML'), findsOneWidget);
+    expect(find.byTooltip('Convertisseur GeoJSON'), findsOneWidget);
+    expect(find.byTooltip('Lecteur KML'), findsOneWidget);
+    expect(find.byTooltip('Télécharger un fichier GeoJSON'), findsOneWidget);
+    expect(find.byTooltip('Liste des PAUS'), findsOneWidget);
+    expect(find.byTooltip('Changer le type de carte'), findsOneWidget);
+
+    // Vérifier FloatingActionButton
+    expect(find.byType(FloatingActionButton), findsOneWidget);
+
+    // Vérifier GoogleMap est présent
+    expect(find.byType(GoogleMap), findsOneWidget);
+  });
+
+  testWidgets('Upload GeoJSON updates progress', (WidgetTester tester) async {
+    final mockStorage = MockGeoJsonStorage();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: SigWeb(title: 'Test SigWeb', storage: mockStorage),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    final state = tester.state<_SigWebState>(find.byType(SigWeb));
+
+    // Simuler upload
+    state.setState(() {
+      state.uploadingData = true;
+      state.uploadProgress = 75;
+    });
+
+    await tester.pumpAndSettle();
+
+    expect(find.text('75%'), findsOneWidget);
+    expect(find.text('Téléchargement en cours...'), findsOneWidget);
+  });
+
+  testWidgets('Map type dialog opens', (WidgetTester tester) async {
+    final mockStorage = MockGeoJsonStorage();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: SigWeb(title: 'Test SigWeb', storage: mockStorage),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Changer le type de carte'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Sélectionner le type de carte'), findsOneWidget);
+    expect(find.text('Normal'), findsOneWidget);
+    expect(find.text('Satellite'), findsOneWidget);
+    expect(find.text('Terrain'), findsOneWidget);
+    expect(find.text('Hybride'), findsOneWidget);
+  });
+
+  testWidgets('GeoJSON selection dialog opens', (WidgetTester tester) async {
+    final mockStorage = MockGeoJsonStorage();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: SigWeb(title: 'Test SigWeb', storage: mockStorage),
+      ),
+    );
+
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Liste des PAUS'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Sélectionner un fichier GeoJSON'), findsOneWidget);
+  });
+}

@@ -19,6 +19,7 @@
         "firebase_auth",
         "firebase_core",
         "firebase_storage",
+        "firebase_storage_mocks",
         "floating_snackbar",
         "flutter",
         "flutter_colorpicker",
@@ -43,11 +44,13 @@
         "http",
         "image_cropper",
         "image_picker",
+        "integration_test",
         "intl",
         "intl_translation",
         "latlong2",
         "localstorage",
         "maps_launcher",
+        "mockito",
         "multi_dropdown",
         "path_provider",
         "permission_handler",
@@ -138,6 +141,63 @@
         "test_api",
         "vector_math",
         "vm_service"
+      ]
+    },
+    {
+      "name": "integration_test",
+      "version": "0.0.0",
+      "dependencies": [
+        "async",
+        "boolean_selector",
+        "characters",
+        "clock",
+        "collection",
+        "fake_async",
+        "file",
+        "flutter",
+        "flutter_driver",
+        "flutter_test",
+        "leak_tracker",
+        "leak_tracker_flutter_testing",
+        "leak_tracker_testing",
+        "matcher",
+        "material_color_utilities",
+        "meta",
+        "path",
+        "source_span",
+        "stack_trace",
+        "stream_channel",
+        "string_scanner",
+        "sync_http",
+        "term_glyph",
+        "test_api",
+        "vector_math",
+        "vm_service",
+        "webdriver"
+      ]
+    },
+    {
+      "name": "firebase_storage_mocks",
+      "version": "0.7.0",
+      "dependencies": [
+        "firebase_storage",
+        "flutter"
+      ]
+    },
+    {
+      "name": "mockito",
+      "version": "5.4.5",
+      "dependencies": [
+        "analyzer",
+        "build",
+        "code_builder",
+        "collection",
+        "dart_style",
+        "matcher",
+        "meta",
+        "path",
+        "source_gen",
+        "test_api"
       ]
     },
     {
@@ -1011,6 +1071,136 @@
       ]
     },
     {
+      "name": "webdriver",
+      "version": "3.1.0",
+      "dependencies": [
+        "matcher",
+        "path",
+        "stack_trace",
+        "sync_http"
+      ]
+    },
+    {
+      "name": "sync_http",
+      "version": "0.3.1",
+      "dependencies": []
+    },
+    {
+      "name": "file",
+      "version": "7.0.1",
+      "dependencies": [
+        "meta",
+        "path"
+      ]
+    },
+    {
+      "name": "flutter_driver",
+      "version": "0.0.0",
+      "dependencies": [
+        "async",
+        "boolean_selector",
+        "characters",
+        "clock",
+        "collection",
+        "file",
+        "flutter",
+        "flutter_test",
+        "fuchsia_remote_debug_protocol",
+        "leak_tracker",
+        "leak_tracker_flutter_testing",
+        "leak_tracker_testing",
+        "matcher",
+        "material_color_utilities",
+        "meta",
+        "path",
+        "platform",
+        "process",
+        "source_span",
+        "stack_trace",
+        "stream_channel",
+        "string_scanner",
+        "sync_http",
+        "term_glyph",
+        "test_api",
+        "vector_math",
+        "vm_service",
+        "webdriver"
+      ]
+    },
+    {
+      "name": "source_gen",
+      "version": "2.0.0",
+      "dependencies": [
+        "analyzer",
+        "async",
+        "build",
+        "dart_style",
+        "glob",
+        "path",
+        "pub_semver",
+        "source_span",
+        "yaml"
+      ]
+    },
+    {
+      "name": "dart_style",
+      "version": "2.3.8",
+      "dependencies": [
+        "analyzer",
+        "args",
+        "collection",
+        "package_config",
+        "path",
+        "pub_semver",
+        "source_span"
+      ]
+    },
+    {
+      "name": "code_builder",
+      "version": "4.10.0",
+      "dependencies": [
+        "built_collection",
+        "built_value",
+        "collection",
+        "matcher",
+        "meta"
+      ]
+    },
+    {
+      "name": "build",
+      "version": "2.4.1",
+      "dependencies": [
+        "analyzer",
+        "async",
+        "convert",
+        "crypto",
+        "glob",
+        "logging",
+        "meta",
+        "package_config",
+        "path"
+      ]
+    },
+    {
+      "name": "analyzer",
+      "version": "6.11.0",
+      "dependencies": [
+        "_fe_analyzer_shared",
+        "collection",
+        "convert",
+        "crypto",
+        "glob",
+        "macros",
+        "meta",
+        "package_config",
+        "path",
+        "pub_semver",
+        "source_span",
+        "watcher",
+        "yaml"
+      ]
+    },
+    {
       "name": "list_counter",
       "version": "1.0.2",
       "dependencies": []
@@ -1466,36 +1656,6 @@
       ]
     },
     {
-      "name": "dart_style",
-      "version": "2.3.6",
-      "dependencies": [
-        "analyzer",
-        "args",
-        "collection",
-        "path",
-        "pub_semver",
-        "source_span"
-      ]
-    },
-    {
-      "name": "analyzer",
-      "version": "6.4.1",
-      "dependencies": [
-        "_fe_analyzer_shared",
-        "collection",
-        "convert",
-        "crypto",
-        "glob",
-        "meta",
-        "package_config",
-        "path",
-        "pub_semver",
-        "source_span",
-        "watcher",
-        "yaml"
-      ]
-    },
-    {
       "name": "url_launcher_windows",
       "version": "3.1.1",
       "dependencies": [
@@ -1781,17 +1941,6 @@
       ]
     },
     {
-      "name": "code_builder",
-      "version": "4.10.0",
-      "dependencies": [
-        "built_collection",
-        "built_value",
-        "collection",
-        "matcher",
-        "meta"
-      ]
-    },
-    {
       "name": "build_runner_core",
       "version": "7.3.1",
       "dependencies": [
@@ -1862,21 +2011,6 @@
         "path",
         "pubspec_parse",
         "yaml"
-      ]
-    },
-    {
-      "name": "build",
-      "version": "2.4.1",
-      "dependencies": [
-        "analyzer",
-        "async",
-        "convert",
-        "crypto",
-        "glob",
-        "logging",
-        "meta",
-        "package_config",
-        "path"
       ]
     },
     {
@@ -2247,6 +2381,68 @@
       ]
     },
     {
+      "name": "process",
+      "version": "5.0.3",
+      "dependencies": [
+        "file",
+        "path",
+        "platform"
+      ]
+    },
+    {
+      "name": "platform",
+      "version": "3.1.6",
+      "dependencies": []
+    },
+    {
+      "name": "fuchsia_remote_debug_protocol",
+      "version": "0.0.0",
+      "dependencies": [
+        "file",
+        "meta",
+        "path",
+        "platform",
+        "process",
+        "vm_service"
+      ]
+    },
+    {
+      "name": "built_value",
+      "version": "8.9.2",
+      "dependencies": [
+        "built_collection",
+        "collection",
+        "fixnum",
+        "meta"
+      ]
+    },
+    {
+      "name": "built_collection",
+      "version": "5.1.1",
+      "dependencies": []
+    },
+    {
+      "name": "convert",
+      "version": "3.1.1",
+      "dependencies": [
+        "typed_data"
+      ]
+    },
+    {
+      "name": "macros",
+      "version": "0.1.3-main.0",
+      "dependencies": [
+        "_macros"
+      ]
+    },
+    {
+      "name": "_fe_analyzer_shared",
+      "version": "76.0.0",
+      "dependencies": [
+        "meta"
+      ]
+    },
+    {
       "name": "just_audio",
       "version": "0.10.4",
       "dependencies": [
@@ -2286,11 +2482,6 @@
         "typed_data",
         "web"
       ]
-    },
-    {
-      "name": "platform",
-      "version": "3.1.4",
-      "dependencies": []
     },
     {
       "name": "xdg_directories",
@@ -2368,28 +2559,6 @@
       ]
     },
     {
-      "name": "file",
-      "version": "7.0.0",
-      "dependencies": [
-        "meta",
-        "path"
-      ]
-    },
-    {
-      "name": "convert",
-      "version": "3.1.1",
-      "dependencies": [
-        "typed_data"
-      ]
-    },
-    {
-      "name": "_fe_analyzer_shared",
-      "version": "67.0.0",
-      "dependencies": [
-        "meta"
-      ]
-    },
-    {
       "name": "_flutterfire_internals",
       "version": "1.3.57",
       "dependencies": [
@@ -2406,21 +2575,6 @@
       "dependencies": [
         "web"
       ]
-    },
-    {
-      "name": "built_value",
-      "version": "8.9.2",
-      "dependencies": [
-        "built_collection",
-        "collection",
-        "fixnum",
-        "meta"
-      ]
-    },
-    {
-      "name": "built_collection",
-      "version": "5.1.1",
-      "dependencies": []
     },
     {
       "name": "path_parsing",
@@ -2518,6 +2672,16 @@
       ]
     },
     {
+      "name": "fixnum",
+      "version": "1.1.0",
+      "dependencies": []
+    },
+    {
+      "name": "_macros",
+      "version": "0.3.3",
+      "dependencies": []
+    },
+    {
       "name": "synchronized",
       "version": "3.4.0",
       "dependencies": []
@@ -2571,11 +2735,6 @@
       "dependencies": [
         "meta"
       ]
-    },
-    {
-      "name": "fixnum",
-      "version": "1.1.0",
-      "dependencies": []
     },
     {
       "name": "sprintf",
