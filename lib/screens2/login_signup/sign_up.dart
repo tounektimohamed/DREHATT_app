@@ -1,3 +1,4 @@
+import 'package:DREHATT_app/screens2/dashboard.dart';
 import 'package:DREHATT_app/screens2/login_signup/sign_in.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -512,61 +513,93 @@ Future signUp() async {
 
                     //google
                     SizedBox(
-                      width: double.infinity,
-                      height: 55,
-                      child: FilledButton.tonalIcon(
-                        onPressed: () async {
-                          UserCredential? userCredential =
-                              await AuthService().signInWithGoogle(context);
-                          print(userCredential?.user!.email);
-                          setState(() {
-                            isLoading = true;
-                          });
-                          await FirebaseFirestore.instance
-                              .collection('Users')
-                              .doc(userCredential?.user!.email)
-                              .set(
-                            {
-                              'name': userCredential?.user!.displayName,
-                              'dob': null,
-                              'gender': null,
-                              'nic': null,
-                              'address': null,
-                              'mobile': null,
-                            },
-                          );
-                          setState(() {
-                            isLoading = false;
-                          });
-                        },
-                        style: const ButtonStyle(
-                          elevation: MaterialStatePropertyAll(2),
-                          shape: MaterialStatePropertyAll(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.all(
-                                Radius.circular(20),
-                              ),
-                            ),
-                          ),
-                        ),
-                        icon: const FaIcon(
-                          FontAwesomeIcons.google,
-                          color: Color.fromARGB(255, 7, 82, 96),
-                          size: 20,
-                        ),
-                        label: !isLoading
-                            ? Text(
-                                'Sign up with Google',
-                                style: GoogleFonts.roboto(
-                                  fontSize: 20,
-                                  color: const Color.fromARGB(255, 7, 82, 96),
-                                ),
-                              )
-                            : const CircularProgressIndicator(
-                                color: Color.fromARGB(255, 7, 82, 96),
-                              ),
-                      ),
-                    ),
+  width: double.infinity,
+  height: 55,
+  child: FilledButton.tonalIcon(
+    onPressed: () async {
+      setState(() {
+        isLoadingGoogle = true;
+      });
+      try {
+        UserCredential? userCredential = await AuthService().signInWithGoogle(context);
+        
+        if (userCredential != null && userCredential.user != null) {
+          // Vérifier si l'utilisateur existe déjà
+          DocumentSnapshot userDoc = await FirebaseFirestore.instance
+              .collection('Users')
+              .doc(userCredential.user!.uid)
+              .get();
+
+          if (!userDoc.exists) {
+            // Créer le nouvel utilisateur avec l'UID comme ID
+            await FirebaseFirestore.instance
+                .collection('Users')
+                .doc(userCredential.user!.uid)
+                .set({
+              'name': userCredential.user!.displayName,
+              'email': userCredential.user!.email,
+              'dob': null,
+              'gender': null,
+              'nic': null,
+              'address': null,
+              'mobile': null,
+              'isAgent': false,
+            });
+          }
+
+          // Ajouter le log d'accès
+          await FirebaseFirestore.instance.collection('access_logs').add({
+            'userId': userCredential.user!.uid,
+            'email': userCredential.user!.email,
+            'name': userCredential.user!.displayName,
+            'timestamp': Timestamp.now(),
+          });
+
+          // Navigation vers le dashboard
+          if (!mounted) return;
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const Dashboard(),
+            ),
+          );
+        }
+      } catch (e) {
+        print('Erreur Google Sign-In: $e');
+      }
+
+      setState(() {
+        isLoadingGoogle = false;
+      });
+    },
+    style: const ButtonStyle(
+      elevation: MaterialStatePropertyAll(2),
+      shape: MaterialStatePropertyAll(
+        RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(
+            Radius.circular(20),
+          ),
+        ),
+      ),
+    ),
+    icon: const FaIcon(
+      FontAwesomeIcons.google,
+      color: Color.fromARGB(255, 7, 82, 96),
+      size: 20,
+    ),
+    label: !isLoadingGoogle
+        ? Text(
+            'Sign up with Google',
+            style: GoogleFonts.roboto(
+              fontSize: 20,
+              color: const Color.fromARGB(255, 7, 82, 96),
+            ),
+          )
+        : const CircularProgressIndicator(
+            color: Color.fromARGB(255, 7, 82, 96),
+          ),
+  ),
+),
                     const SizedBox(
                       height: 10,
                     ),

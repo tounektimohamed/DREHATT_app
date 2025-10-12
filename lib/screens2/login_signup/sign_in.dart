@@ -247,34 +247,89 @@ class _SignInState extends State<SignIn> {
                             String? userEmail = user.user!.email;
                             print('Email : $userEmail');
 
-                            try {
-                              var a = await FirebaseFirestore.instance
-                                  .collection('Users')
-                                  .doc(user.user!.email)
-                                  .get();
-                              if (a.exists) {
-                                print('Already Registered user');
+                            // Vérifier si l'utilisateur existe dans Firestore
+                            DocumentSnapshot userDoc = await FirebaseFirestore
+                                .instance
+                                .collection('Users')
+                                .doc(user.user!
+                                    .uid) // Utiliser l'UID au lieu de l'email
+                                .get();
+
+                            if (userDoc.exists) {
+                              print('Already Registered user');
+
+                              // Ajouter le log d'accès
+                              await FirebaseFirestore.instance
+                                  .collection('access_logs')
+                                  .add({
+                                'userId': user.user!.uid,
+                                'email': user.user!.email,
+                                'name': user.user!.displayName,
+                                'timestamp': Timestamp.now(),
+                              });
+
+                              // Vérifier si c'est un agent
+                              bool isAgent = userDoc.get('isAgent') ?? false;
+
+                              if (!mounted) return;
+
+                              // Navigation vers la page appropriée
+                              if (isAgent) {
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        const Agentdashboard(),
+                                  ),
+                                );
                               } else {
-                                print('New USER');
-                                await FirebaseFirestore.instance
-                                    .collection('Users')
-                                    .doc(userEmail)
-                                    .set(
-                                  {
-                                    'name': user.user!.displayName,
-                                    'dob': null,
-                                    'gender': null,
-                                    'nic': null,
-                                    'address': null,
-                                    'mobile': null,
-                                  },
+                                Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const Dashboard(),
+                                  ),
                                 );
                               }
-                            } catch (e) {
-                              print(e);
+                            } else {
+                              print('New USER');
+                              // Créer le document utilisateur avec l'UID comme ID
+                              await FirebaseFirestore.instance
+                                  .collection('Users')
+                                  .doc(user.user!.uid)
+                                  .set({
+                                'name': user.user!.displayName,
+                                'email': user.user!.email,
+                                'dob': null,
+                                'gender': null,
+                                'nic': null,
+                                'address': null,
+                                'mobile': null,
+                                'isAgent': false,
+                              });
+
+                              // Ajouter le log d'accès
+                              await FirebaseFirestore.instance
+                                  .collection('access_logs')
+                                  .add({
+                                'userId': user.user!.uid,
+                                'email': user.user!.email,
+                                'name': user.user!.displayName,
+                                'timestamp': Timestamp.now(),
+                              });
+
+                              if (!mounted) return;
+
+                              // Navigation vers le dashboard standard pour les nouveaux utilisateurs
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const Dashboard(),
+                                ),
+                              );
                             }
                           } catch (e) {
-                            print(e);
+                            print('Erreur Google Sign-In: $e');
+                            // L'erreur est déjà gérée dans AuthService
                           }
 
                           setState(() {
