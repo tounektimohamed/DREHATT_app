@@ -569,7 +569,7 @@ class _SigWebState extends State<SigWeb> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Suivi des PAUS',
+          'Suivi des PAUS et plans de lotissement',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.blue[800],

@@ -5,7 +5,7 @@ class ShapeDetailsPage extends StatefulWidget {
   final String shapeType;
   final double area;
 
-  ShapeDetailsPage({required this.shapeType, required this.area});
+  ShapeDetailsPage({required this.shapeType, required this.area, required List<Map<String, dynamic>> coordinates});
 
   @override
   _ShapeDetailsPageState createState() => _ShapeDetailsPageState();

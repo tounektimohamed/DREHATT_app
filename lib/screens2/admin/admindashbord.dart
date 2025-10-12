@@ -22,6 +22,9 @@ import 'package:DREHATT_app/screens2/news/gerenews.dart';
 import 'package:DREHATT_app/screens2/users/User%20Management.dart';
 import '../login_signup/account_settings.dart';
 
+// Pages supplémentaires à intégrer
+import 'package:DREHATT_app/screens2/news/add_news_screen.dart';
+
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({Key? key}) : super(key: key);
 
@@ -46,7 +49,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
   // Catégories pour organiser les fonctionnalités
   final List<Map<String, dynamic>> _geoItems = [
     {
-      'title': 'Suivi des PAUS',
+      'title': 'Suivi des PAUS et plans de lotissement',
       'image': 'lib/assets/icons/me/isens_thumb-removebg-preview.png',
       'onTap': (context) {
         Navigator.push(
@@ -71,19 +74,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
       },
       'color': const Color(0xFF4299E1),
     },
-    {
-      'title': 'Suivi des plans de lotissement',
-      'image': 'lib/assets/icons/me/realisations-16918-removebg-preview.png',
-      'onTap': (context) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CombinedMapPage(),
-          ),
-        );
-      },
-      'color': const Color(0xFFED8936),
-    },
+    
     {
       'title': 'Ajouter tiff',
       'image': 'lib/assets/icons/me/ajout des images.png',
@@ -99,7 +90,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
     },
     {
       'title': 'Test d\'images',
-      'image': 'lib/assets/icons/me/camera.png', // choisis une icône ou image
+      'image': 'lib/assets/icons/me/camera.png',
       'onTap': (context) {
         Navigator.push(
           context,
@@ -207,6 +198,20 @@ class _AdminDashboardState extends State<AdminDashboard> {
       },
       'color': const Color(0xFFFC8181),
     },
+    // NOUVEAU: Ajout de la page d'ajout d'actualité
+    {
+      'title': 'Ajouter une actualité',
+      'image': 'lib/assets/icons/me/news.gif',
+      'onTap': (context) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const AddNewsScreen(),
+          ),
+        );
+      },
+      'color': const Color(0xFFA0AEC0),
+    },
   ];
 
   @override
@@ -215,21 +220,23 @@ class _AdminDashboardState extends State<AdminDashboard> {
       backgroundColor: const Color(0xFFF5F7FA),
       body: LayoutBuilder(
         builder: (context, constraints) {
+          bool isLargeDesktop = constraints.maxWidth > 1200;
           bool isDesktop = constraints.maxWidth > 900;
-          bool isTablet =
-              constraints.maxWidth > 600 && constraints.maxWidth <= 900;
+          bool isTablet = constraints.maxWidth > 600 && constraints.maxWidth <= 900;
+          bool isMobile = constraints.maxWidth <= 600;
+          bool isSmallMobile = constraints.maxWidth <= 360;
 
           return Column(
             children: [
               // En-tête amélioré
-              _buildHeader(isDesktop),
+              _buildHeader(isDesktop, isSmallMobile),
 
               // Contenu principal avec navigation
               Expanded(
                 child: Row(
                   children: [
                     // Navigation latérale pour desktop
-                    if (isDesktop) _buildDesktopNavigation(),
+                    if (isDesktop) _buildDesktopNavigation(isLargeDesktop),
 
                     // Contenu principal
                     Expanded(
@@ -242,19 +249,19 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         },
                         children: [
                           // Page Tableau de bord
-                          _buildDashboardContent(isDesktop, isTablet),
+                          _buildDashboardContent(isDesktop, isTablet, isMobile, isSmallMobile),
 
                           // Page Géospatial
                           _buildCategoryPage(
-                              "Géospatial", _geoItems, isDesktop, isTablet),
+                              "Géospatial", _geoItems, isDesktop, isTablet, isMobile, isSmallMobile),
 
                           // Page Gestion
                           _buildCategoryPage(
-                              "Gestion", _managementItems, isDesktop, isTablet),
+                              "Gestion", _managementItems, isDesktop, isTablet, isMobile, isSmallMobile),
 
-                          // Page Demandes
+                          // Page Demandes (avec les nouvelles pages ajoutées)
                           _buildCategoryPage(
-                              "Demandes", _requestItems, isDesktop, isTablet),
+                              "Demandes", _requestItems, isDesktop, isTablet, isMobile, isSmallMobile),
                         ],
                       ),
                     ),
@@ -272,11 +279,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
     );
   }
 
-  Widget _buildHeader(bool isDesktop) {
+  Widget _buildHeader(bool isDesktop, bool isSmallMobile) {
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: isDesktop ? 40 : 20,
-        vertical: isDesktop ? 20 : 16,
+        horizontal: isDesktop ? 40 : (isSmallMobile ? 12 : 20),
+        vertical: isDesktop ? 20 : (isSmallMobile ? 12 : 16),
       ),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -294,24 +301,31 @@ class _AdminDashboardState extends State<AdminDashboard> {
         children: [
           Image.asset(
             'lib/assets/icons/me/logo.png',
-            height: isDesktop ? 60 : 40,
+            height: isDesktop ? 60 : (isSmallMobile ? 30 : 40),
+            fit: BoxFit.contain,
           ),
           if (!isDesktop)
-            Text(
-              'Tableau de bord',
-              style: GoogleFonts.roboto(
-                fontSize: 20,
-                fontWeight: FontWeight.w600,
-                color: const Color(0xFF2D3748),
+            Flexible(
+              child: Text(
+                'Tableau de bord Admin',
+                style: GoogleFonts.roboto(
+                  fontSize: isSmallMobile ? 16 : 20,
+                  fontWeight: FontWeight.w600,
+                  color: const Color(0xFF2D3748),
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           Row(
             children: [
               IconButton(
-                icon: const Icon(Icons.notifications_none, color: Colors.grey),
+                icon: Icon(Icons.notifications_none, 
+                  color: Colors.grey,
+                  size: isSmallMobile ? 20 : 24,
+                ),
                 onPressed: () {},
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: isSmallMobile ? 8 : 12),
               GestureDetector(
                 onTap: () {
                   Navigator.push(
@@ -322,13 +336,15 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   );
                 },
                 child: CircleAvatar(
-                  radius: isDesktop ? 22 : 18,
+                  radius: isDesktop ? 22 : (isSmallMobile ? 16 : 18),
                   backgroundImage: currentUser?.photoURL != null
                       ? NetworkImage(currentUser!.photoURL!)
                       : null,
                   backgroundColor: const Color(0xFF3A7FD5),
                   child: currentUser?.photoURL == null
-                      ? const Icon(Icons.person_outline, color: Colors.white)
+                      ? Icon(Icons.person_outline, 
+                          color: Colors.white,
+                          size: isSmallMobile ? 16 : 20)
                       : null,
                 ),
               ),
@@ -339,9 +355,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
     );
   }
 
-  Widget _buildDesktopNavigation() {
+  Widget _buildDesktopNavigation([bool isLargeDesktop = false]) {
     return Container(
-      width: 250,
+      width: isLargeDesktop ? 280 : 250,
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
@@ -358,32 +374,36 @@ class _AdminDashboardState extends State<AdminDashboard> {
         children: [
           const SizedBox(height: 40),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
+            padding: EdgeInsets.symmetric(horizontal: isLargeDesktop ? 28 : 24),
             child: Text(
               'Administration',
               style: GoogleFonts.roboto(
-                fontSize: 20,
+                fontSize: isLargeDesktop ? 22 : 20,
                 fontWeight: FontWeight.w700,
                 color: const Color(0xFF2D3748),
               ),
             ),
           ),
           const SizedBox(height: 32),
-          _buildNavItem('Tableau de bord', Icons.dashboard, 0),
-          _buildNavItem('Géospatial', Icons.map, 1),
-          _buildNavItem('Gestion', Icons.people, 2),
-          _buildNavItem('Demandes', Icons.request_page, 3),
-          const SatelliteMonitorPage(), // 🚀 nouvelle page ajoutée ici
+          _buildNavItem('Tableau de bord', Icons.dashboard, 0, isLargeDesktop),
+          _buildNavItem('Géospatial', Icons.map, 1, isLargeDesktop),
+          _buildNavItem('Gestion', Icons.people, 2, isLargeDesktop),
+          _buildNavItem('Demandes', Icons.request_page, 3, isLargeDesktop),
+          const SatelliteMonitorPage(),
 
           const Spacer(),
           const Divider(),
           ListTile(
-            leading: const Icon(Icons.settings, color: Colors.grey),
+            leading: Icon(Icons.settings, 
+              color: Colors.grey,
+              size: isLargeDesktop ? 24 : 20,
+            ),
             title: Text(
               'Paramètres',
               style: GoogleFonts.roboto(
                 color: Colors.grey[700],
                 fontWeight: FontWeight.w500,
+                fontSize: isLargeDesktop ? 16 : 14,
               ),
             ),
             onTap: () {
@@ -400,11 +420,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
     );
   }
 
-  Widget _buildNavItem(String title, IconData icon, int index) {
+  Widget _buildNavItem(String title, IconData icon, int index, bool isLargeDesktop) {
     return ListTile(
       leading: Icon(icon,
-          color:
-              _currentIndex == index ? const Color(0xFF3A7FD5) : Colors.grey),
+          size: isLargeDesktop ? 24 : 20,
+          color: _currentIndex == index ? const Color(0xFF3A7FD5) : Colors.grey),
       title: Text(
         title,
         style: GoogleFonts.roboto(
@@ -413,6 +433,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
               : Colors.grey[700],
           fontWeight:
               _currentIndex == index ? FontWeight.w600 : FontWeight.w500,
+          fontSize: isLargeDesktop ? 16 : 14,
         ),
       ),
       onTap: () {
@@ -424,106 +445,140 @@ class _AdminDashboardState extends State<AdminDashboard> {
     );
   }
 
-  Widget _buildDashboardContent(bool isDesktop, bool isTablet) {
+  Widget _buildDashboardContent(bool isDesktop, bool isTablet, bool isMobile, bool isSmallMobile) {
     return SingleChildScrollView(
-      padding: EdgeInsets.all(isDesktop ? 24 : 16),
+      padding: EdgeInsets.all(isDesktop ? 24 : (isSmallMobile ? 12 : 16)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Section de bienvenue
-          _buildWelcomeSection(isDesktop),
+          _buildWelcomeSection(isDesktop, isSmallMobile),
 
-          const SizedBox(height: 24),
+          SizedBox(height: isSmallMobile ? 16 : 24),
 
           // Calendrier
-          _buildCalendarSection(isDesktop, isTablet),
+          _buildCalendarSection(isDesktop, isTablet, isSmallMobile),
 
-          const SizedBox(height: 32),
+          SizedBox(height: isSmallMobile ? 24 : 32),
 
           // Accès rapide aux catégories
-          Text(
-            'Accès rapide',
-            style: GoogleFonts.roboto(
-              fontSize: isDesktop ? 22 : 18,
-              fontWeight: FontWeight.w600,
-              color: const Color(0xFF2D3748),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: isSmallMobile ? 4 : 0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Accès rapide',
+                  style: GoogleFonts.roboto(
+                    fontSize: isDesktop ? 22 : (isSmallMobile ? 16 : 18),
+                    fontWeight: FontWeight.w600,
+                    color: const Color(0xFF2D3748),
+                  ),
+                ),
+                if (!isSmallMobile)
+                  GestureDetector(
+                    onTap: () {
+                      // Action pour "Voir tout"
+                    },
+                    child: Text(
+                      'Voir tout',
+                      style: GoogleFonts.roboto(
+                        fontSize: 14,
+                        color: const Color(0xFF3A7FD5),
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: isSmallMobile ? 12 : 16),
 
-          // Cartes de catégories
-          if (isDesktop || isTablet)
-            Row(
+          // Cartes de catégories avec défilement horizontal
+          Container(
+            height: isSmallMobile ? 110 : 130,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              padding: EdgeInsets.symmetric(horizontal: isSmallMobile ? 8 : 16),
               children: [
-                Expanded(
-                    child: _buildCategoryCard(
-                        'Géospatial', Icons.map, const Color(0xFF48BB78), 1)),
-                const SizedBox(width: 16),
-                Expanded(
-                    child: _buildCategoryCard(
-                        'Gestion', Icons.people, const Color(0xFF4299E1), 2)),
-                const SizedBox(width: 16),
-                Expanded(
-                    child: _buildCategoryCard('Demandes', Icons.request_page,
-                        const Color(0xFFED8936), 3)),
-              ],
-            )
-          else
-            Column(
-              children: [
-                _buildCategoryCard(
-                    'Géospatial', Icons.map, const Color(0xFF48BB78), 1),
-                const SizedBox(height: 12),
-                _buildCategoryCard(
-                    'Gestion', Icons.people, const Color(0xFF4299E1), 2),
-                const SizedBox(height: 12),
-                _buildCategoryCard(
-                    'Demandes', Icons.request_page, const Color(0xFFED8936), 3),
+                _buildHorizontalCategoryCard(
+                  'Géospatial', 
+                  Icons.map, 
+                  const Color(0xFF48BB78), 
+                  1, 
+                  isSmallMobile
+                ),
+                SizedBox(width: isSmallMobile ? 10 : 16),
+                _buildHorizontalCategoryCard(
+                  'Gestion', 
+                  Icons.people, 
+                  const Color(0xFF4299E1), 
+                  2, 
+                  isSmallMobile
+                ),
+                SizedBox(width: isSmallMobile ? 10 : 16),
+                _buildHorizontalCategoryCard(
+                  'Demandes', 
+                  Icons.request_page, 
+                  const Color(0xFFED8936), 
+                  3, 
+                  isSmallMobile
+                ),
               ],
             ),
+          ),
         ],
       ),
     );
   }
 
   Widget _buildCategoryPage(String title, List<Map<String, dynamic>> items,
-      bool isDesktop, bool isTablet) {
+      bool isDesktop, bool isTablet, bool isMobile, bool isSmallMobile) {
     int crossAxisCount;
+    double childAspectRatio;
+    
     if (isDesktop) {
       crossAxisCount = 4;
+      childAspectRatio = 0.9;
     } else if (isTablet) {
       crossAxisCount = 3;
-    } else {
+      childAspectRatio = 0.85;
+    } else if (isMobile) {
       crossAxisCount = 2;
+      childAspectRatio = isSmallMobile ? 0.75 : 0.8;
+    } else {
+      crossAxisCount = 1;
+      childAspectRatio = 0.9;
     }
 
     return SingleChildScrollView(
-      padding: EdgeInsets.all(isDesktop ? 24 : 16),
+      padding: EdgeInsets.all(isDesktop ? 24 : (isSmallMobile ? 12 : 16)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
             style: GoogleFonts.roboto(
-              fontSize: isDesktop ? 28 : 22,
+              fontSize: isDesktop ? 28 : (isSmallMobile ? 20 : 22),
               fontWeight: FontWeight.w700,
               color: const Color(0xFF2D3748),
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: isSmallMobile ? 12 : 16),
           GridView.count(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             crossAxisCount: crossAxisCount,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            childAspectRatio: 0.9,
+            crossAxisSpacing: isSmallMobile ? 8 : 16,
+            mainAxisSpacing: isSmallMobile ? 8 : 16,
+            childAspectRatio: childAspectRatio,
             children: items.map((item) {
               return _buildDashboardItem(
                 item['title'],
                 item['image'],
                 item['color'],
                 () => item['onTap'](context),
+                isSmallMobile,
               );
             }).toList(),
           ),
@@ -532,23 +587,23 @@ class _AdminDashboardState extends State<AdminDashboard> {
     );
   }
 
-  Widget _buildWelcomeSection(bool isDesktop) {
+  Widget _buildWelcomeSection(bool isDesktop, bool isSmallMobile) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'Bonjour, Admin',
           style: GoogleFonts.roboto(
-            fontSize: isDesktop ? 28 : 22,
+            fontSize: isDesktop ? 28 : (isSmallMobile ? 20 : 22),
             fontWeight: FontWeight.w700,
             color: const Color(0xFF2D3748),
           ),
         ),
-        const SizedBox(height: 4),
+        SizedBox(height: isSmallMobile ? 2 : 4),
         Text(
           'Voici un aperçu de vos activités',
           style: GoogleFonts.roboto(
-            fontSize: isDesktop ? 16 : 14,
+            fontSize: isDesktop ? 16 : (isSmallMobile ? 12 : 14),
             color: Colors.grey[600],
             fontWeight: FontWeight.w400,
           ),
@@ -557,9 +612,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
     );
   }
 
-  Widget _buildCalendarSection(bool isDesktop, bool isTablet) {
+  Widget _buildCalendarSection(bool isDesktop, bool isTablet, bool isSmallMobile) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(isSmallMobile ? 12 : 16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -578,12 +633,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
           Text(
             'Calendrier',
             style: GoogleFonts.roboto(
-              fontSize: isDesktop ? 20 : 18,
+              fontSize: isDesktop ? 20 : (isSmallMobile ? 16 : 18),
               fontWeight: FontWeight.w600,
               color: const Color(0xFF2D3748),
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: isSmallMobile ? 8 : 16),
           TimelineCalendar(
             calendarType: CalendarType.GREGORIAN,
             calendarOptions: CalendarOptions(
@@ -594,7 +649,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
             ),
             dayOptions: DayOptions(
               compactMode: true,
-              dayFontSize: isDesktop ? 16 : 14,
+              dayFontSize: isDesktop ? 16 : (isSmallMobile ? 10 : 14),
               weekDaySelectedColor: const Color(0xFF3A7FD5),
               selectedBackgroundColor: const Color(0xFF3A7FD5),
               disableDaysBeforeNow: false,
@@ -622,11 +677,11 @@ class _AdminDashboardState extends State<AdminDashboard> {
             },
             dateTime: _selectedDate.value,
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: isSmallMobile ? 8 : 16),
           Text(
             _selectedDate.value.toString().substring(0, 10),
             style: GoogleFonts.roboto(
-              fontSize: isDesktop ? 18 : 16,
+              fontSize: isDesktop ? 18 : (isSmallMobile ? 14 : 16),
               fontWeight: FontWeight.w500,
               color: const Color(0xFF3A7FD5),
             ),
@@ -636,65 +691,67 @@ class _AdminDashboardState extends State<AdminDashboard> {
     );
   }
 
-  Widget _buildCategoryCard(
-      String title, IconData icon, Color color, int pageIndex) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: InkWell(
-        onTap: () {
-          setState(() {
-            _currentIndex = pageIndex;
-            _pageController.jumpToPage(pageIndex);
-          });
-        },
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(icon, size: 30, color: color),
+  Widget _buildHorizontalCategoryCard(
+      String title, IconData icon, Color color, int pageIndex, bool isSmallMobile) {
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _currentIndex = pageIndex;
+          _pageController.jumpToPage(pageIndex);
+        });
+      },
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        width: isSmallMobile ? 100 : 120,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 4,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: EdgeInsets.all(isSmallMobile ? 10 : 12),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                shape: BoxShape.circle,
               ),
-              const SizedBox(height: 12),
-              Text(
+              child: Icon(icon, 
+                size: isSmallMobile ? 20 : 24, 
+                color: color
+              ),
+            ),
+            SizedBox(height: isSmallMobile ? 6 : 8),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 4),
+              child: Text(
                 title,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.roboto(
-                  fontSize: 16,
+                  fontSize: isSmallMobile ? 12 : 14,
                   fontWeight: FontWeight.w600,
                   color: const Color(0xFF2D3748),
                 ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: 8),
-              Text(
-                'Voir détails',
-                style: GoogleFonts.roboto(
-                  fontSize: 12,
-                  color: Colors.grey[600],
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
 
   Widget _buildDashboardItem(
-      String title, String imagePath, Color color, VoidCallback onTap) {
+      String title, String imagePath, Color color, VoidCallback onTap, bool isSmallMobile) {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
@@ -704,7 +761,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Container(
-          padding: const EdgeInsets.all(16),
+          padding: EdgeInsets.all(isSmallMobile ? 12 : 16),
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
@@ -713,24 +770,24 @@ class _AdminDashboardState extends State<AdminDashboard> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: EdgeInsets.all(isSmallMobile ? 8 : 12),
                 decoration: BoxDecoration(
                   color: color.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Image.asset(
                   imagePath,
-                  height: 32,
-                  width: 32,
+                  height: isSmallMobile ? 24 : 32,
+                  width: isSmallMobile ? 24 : 32,
                   color: color,
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: isSmallMobile ? 8 : 12),
               Text(
                 title,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.roboto(
-                  fontSize: 14,
+                  fontSize: isSmallMobile ? 12 : 14,
                   fontWeight: FontWeight.w500,
                   color: const Color(0xFF2D3748),
                 ),

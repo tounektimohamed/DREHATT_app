@@ -71,19 +71,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
       },
       'color': const Color(0xFF4299E1),
     },
-    {
-      'title': 'Suivi des plans de lotissement',
-      'image': 'lib/assets/icons/me/realisations-16918-removebg-preview.png',
-      'onTap': (context) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => CombinedMapPage(),
-          ),
-        );
-      },
-      'color': const Color(0xFFED8936),
-    },
+  
     {
       'title': 'Ajouter tiff',
       'image': 'lib/assets/icons/me/ajout des images.png',

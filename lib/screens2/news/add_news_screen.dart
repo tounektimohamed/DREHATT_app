@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -14,14 +13,16 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
+  final _authorController = TextEditingController(); // Nouveau champ pour le nom de l'auteur
   bool isLoading = false;
 
   Future<void> _submitNews() async {
     if (_formKey.currentState!.validate()) {
       String title = _titleController.text;
       String content = _contentController.text;
-      String author = FirebaseAuth.instance.currentUser!.email!;
-      String name = FirebaseAuth.instance.currentUser!.displayName ?? '';
+      String author = _authorController.text.isNotEmpty 
+          ? _authorController.text 
+          : 'Anonymous'; // Valeur par défaut si le champ est vide
 
       setState(() {
         isLoading = true;
@@ -31,9 +32,8 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
         await FirebaseFirestore.instance.collection('news').add({
           'title': title,
           'content': content,
-          'author': author,
+          'author': author, // Utilise le nom saisi par l'utilisateur
           'timestamp': FieldValue.serverTimestamp(),
-          'name': name,
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -42,23 +42,24 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
             behavior: SnackBarBehavior.floating,
             duration: Duration(seconds: 2),
             content: Text(
-              'News added successfully',
+              'Actualité ajoutée avec succès',
             ),
           ),
         );
 
-        // Clear fields after successful submission
+        // Réinitialiser les champs après l'envoi réussi
         _titleController.clear();
         _contentController.clear();
+        _authorController.clear();
       } catch (e) {
-        print('Error adding news: $e');
+        print('Erreur lors de l\'ajout de l\'actualité: $e');
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             backgroundColor: Colors.red,
             behavior: SnackBarBehavior.floating,
             duration: Duration(seconds: 2),
             content: Text(
-              'Failed to add news',
+              'Échec de l\'ajout de l\'actualité',
             ),
           ),
         );
@@ -75,7 +76,7 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'Add News',
+          'Ajouter une actualité',
           style: GoogleFonts.roboto(
             fontWeight: FontWeight.w600,
           ),
@@ -89,11 +90,11 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Title TextField
+              // Champ Titre
               TextFormField(
                 controller: _titleController,
                 decoration: InputDecoration(
-                  labelText: 'Title',
+                  labelText: 'Titre',
                   labelStyle: GoogleFonts.roboto(
                     color: const Color.fromARGB(255, 16, 15, 15),
                   ),
@@ -103,17 +104,31 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
                 ),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'Please enter a title';
+                    return 'Veuillez saisir un titre';
                   }
                   return null;
                 },
               ),
-              SizedBox(height: 20),
-              // Content TextField
+              const SizedBox(height: 20),
+              // Champ Auteur (optionnel)
+              TextFormField(
+                controller: _authorController,
+                decoration: InputDecoration(
+                  labelText: 'Votre nom (optionnel)',
+                  labelStyle: GoogleFonts.roboto(
+                    color: const Color.fromARGB(255, 16, 15, 15),
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              // Champ Contenu
               TextFormField(
                 controller: _contentController,
                 decoration: InputDecoration(
-                  labelText: 'Content',
+                  labelText: 'Contenu',
                   labelStyle: GoogleFonts.roboto(
                     color: const Color.fromARGB(255, 16, 15, 15),
                   ),
@@ -123,14 +138,14 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
                 ),
                 validator: (value) {
                   if (value!.isEmpty) {
-                    return 'Please enter the content';
+                    return 'Veuillez saisir le contenu';
                   }
                   return null;
                 },
                 maxLines: 5,
               ),
-              SizedBox(height: 30),
-              // Submit Button
+              const SizedBox(height: 30),
+              // Bouton d'envoi
               SizedBox(
                 width: double.infinity,
                 height: 55,
@@ -150,12 +165,11 @@ class _AddNewsScreenState extends State<AddNewsScreen> {
                     ),
                   ),
                   child: isLoading
-                      ? CircularProgressIndicator(
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.white),
+                      ? const CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                         )
                       : Text(
-                          'Submit',
+                          'Publier',
                           style: GoogleFonts.roboto(
                             fontSize: 20,
                             fontWeight: FontWeight.w600,

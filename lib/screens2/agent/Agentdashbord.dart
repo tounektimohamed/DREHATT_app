@@ -34,27 +34,47 @@ class _AgentDashboardState extends State<AgentDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF7FAFC),
       body: LayoutBuilder(
         builder: (context, constraints) {
-          bool isDesktop =
-              constraints.maxWidth > 600; // Définir un seuil pour le bureau
+          bool isLargeScreen = constraints.maxWidth > 1000;
+          bool isMediumScreen = constraints.maxWidth > 600 && constraints.maxWidth <= 1000;
+          bool isSmallScreen = constraints.maxWidth <= 600;
 
           return SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // En-tête avec logo et icône utilisateur
-                Padding(
+                // En-tête amélioré avec dégradé de couleur
+                Container(
                   padding: EdgeInsets.symmetric(
-                    horizontal: isDesktop ? 40 : 20,
-                    vertical: isDesktop ? 20 : 10,
+                    horizontal: isLargeScreen ? 40 : (isMediumScreen ? 30 : 20),
+                    vertical: isLargeScreen ? 25 : (isMediumScreen ? 20 : 15),
+                  ),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        const Color(0xFF3A7FD5),
+                        const Color(0xFF2D68A9),
+                      ],
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 10,
+                        offset: Offset(0, 4),
+                      ),
+                    ],
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Image.asset(
                         'lib/assets/icons/me/logo.png',
-                        height: isDesktop ? 80 : 50,
+                        height: isLargeScreen ? 70 : (isMediumScreen ? 50 : 40),
+                        filterQuality: FilterQuality.high,
                       ),
                       GestureDetector(
                         onTap: () {
@@ -65,159 +85,235 @@ class _AgentDashboardState extends State<AgentDashboard> {
                             ),
                           );
                         },
-                        child: CircleAvatar(
-                          radius: isDesktop ? 30 : 20,
-                          backgroundImage: currentUser?.photoURL != null
-                              ? NetworkImage(currentUser!.photoURL!)
-                              : null,
-                          backgroundColor:
-                              Theme.of(context).colorScheme.primary,
-                          child: currentUser?.photoURL == null
-                              ? const Icon(Icons.person_outlined)
-                              : null,
+                        child: Container(
+                          padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.2),
+                            shape: BoxShape.circle,
+                          ),
+                          child: CircleAvatar(
+                            radius: isLargeScreen ? 22 : (isMediumScreen ? 18 : 16),
+                            backgroundImage: currentUser?.photoURL != null
+                                ? NetworkImage(currentUser!.photoURL!)
+                                : null,
+                            backgroundColor: Colors.white,
+                            child: currentUser?.photoURL == null
+                                ? Icon(Icons.person_outline, 
+                                    color: Color(0xFF3A7FD5),
+                                    size: isLargeScreen ? 24 : 20)
+                                : null,
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
 
-                // Calendrier et date sélectionnée
+                // Section de bienvenue
                 Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: isDesktop ? 40 : 20,
-                    vertical: isDesktop ? 30 : 20,
+                  padding: EdgeInsets.fromLTRB(
+                    isLargeScreen ? 40 : (isMediumScreen ? 30 : 20),
+                    isLargeScreen ? 30 : 20,
+                    isLargeScreen ? 40 : (isMediumScreen ? 30 : 20),
+                    0,
                   ),
-                  child: TimelineCalendar(
-                    calendarType: CalendarType.GREGORIAN,
-                    calendarOptions: CalendarOptions(
-                      viewType: ViewType.DAILY,
-                      toggleViewType: true,
-                      headerMonthElevation: 0,
-                      headerMonthBackColor:
-                          const Color.fromARGB(255, 241, 250, 251),
-                    ),
-                    dayOptions: DayOptions(
-                      compactMode: true,
-                      dayFontSize: isDesktop ? 18 : 15,
-                      weekDaySelectedColor:
-                          Theme.of(context).colorScheme.primary,
-                      selectedBackgroundColor:
-                          Theme.of(context).colorScheme.primary,
-                      disableDaysBeforeNow: false,
-                      unselectedBackgroundColor: Colors.white,
-                    ),
-                    headerOptions: HeaderOptions(
-                      weekDayStringType: WeekDayStringTypes.SHORT,
-                      monthStringType: MonthStringTypes.FULL,
-                      backgroundColor: const Color.fromARGB(255, 241, 250, 251),
-                      headerTextColor: Colors.black,
-                    ),
-                    onChangeDateTime: (date) {
-                      setState(() {
-                        _selectedDate.value = date;
-                      });
-                    },
-                    onDateTimeReset: (p0) {
-                      setState(() {
-                        _selectedDate.value = CalendarDateTime(
-                          year: DateTime.now().year,
-                          month: DateTime.now().month,
-                          day: DateTime.now().day,
-                        );
-                      });
-                    },
-                    dateTime: _selectedDate.value,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Bonjour, Agent',
+                        style: GoogleFonts.roboto(
+                          fontSize: isLargeScreen ? 28 : (isMediumScreen ? 24 : 20),
+                          fontWeight: FontWeight.w700,
+                          color: const Color(0xFF2D3748),
+                        ),
+                      ),
+                      SizedBox(height: 4),
+                      Text(
+                        'Bienvenue sur votre tableau de bord',
+                        style: GoogleFonts.roboto(
+                          fontSize: isLargeScreen ? 16 : 14,
+                          color: Colors.grey[600],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
 
-                // Texte de la date sélectionnée
+                // Calendrier dans un card avec design amélioré
                 Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: isDesktop ? 40 : 20,
-                    vertical: isDesktop ? 20 : 10,
+                  padding: EdgeInsets.all(isLargeScreen ? 30 : (isMediumScreen ? 20 : 16)),
+                  child: Card(
+                    elevation: 3,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.all(isLargeScreen ? 20 : 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Calendrier',
+                            style: GoogleFonts.roboto(
+                              fontSize: isLargeScreen ? 20 : 18,
+                              fontWeight: FontWeight.w600,
+                              color: const Color(0xFF2D3748),
+                            ),
+                          ),
+                          SizedBox(height: 16),
+                          TimelineCalendar(
+                            calendarType: CalendarType.GREGORIAN,
+                            calendarOptions: CalendarOptions(
+                              viewType: ViewType.DAILY,
+                              toggleViewType: true,
+                              headerMonthElevation: 0,
+                              headerMonthBackColor: const Color(0xFFF7FAFC),
+                            ),
+                            dayOptions: DayOptions(
+                              compactMode: true,
+                              dayFontSize: isLargeScreen ? 16 : 14,
+                              weekDaySelectedColor: const Color(0xFF3A7FD5),
+                              selectedBackgroundColor: const Color(0xFF3A7FD5),
+                              disableDaysBeforeNow: false,
+                              unselectedBackgroundColor: Colors.white,
+                            ),
+                            headerOptions: HeaderOptions(
+                              weekDayStringType: WeekDayStringTypes.SHORT,
+                              monthStringType: MonthStringTypes.FULL,
+                              backgroundColor: const Color(0xFFF7FAFC),
+                              headerTextColor: const Color(0xFF2D3748),
+                            ),
+                            onChangeDateTime: (date) {
+                              setState(() {
+                                _selectedDate.value = date;
+                              });
+                            },
+                            onDateTimeReset: (p0) {
+                              setState(() {
+                                _selectedDate.value = CalendarDateTime(
+                                  year: DateTime.now().year,
+                                  month: DateTime.now().month,
+                                  day: DateTime.now().day,
+                                );
+                              });
+                            },
+                            dateTime: _selectedDate.value,
+                          ),
+                          SizedBox(height: 16),
+                          Container(
+                            padding: EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Color(0xFF3A7FD5).withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.calendar_today, 
+                                    size: 18, 
+                                    color: Color(0xFF3A7FD5)),
+                                SizedBox(width: 8),
+                                Text(
+                                  _selectedDate.value.toString().substring(0, 10),
+                                  style: GoogleFonts.roboto(
+                                    fontSize: isLargeScreen ? 18 : 16,
+                                    fontWeight: FontWeight.w500,
+                                    color: const Color(0xFF3A7FD5),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Section des fonctionnalités avec titre
+                Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    isLargeScreen ? 40 : (isMediumScreen ? 30 : 20),
+                    0,
+                    isLargeScreen ? 40 : (isMediumScreen ? 30 : 20),
+                    10,
                   ),
                   child: Text(
-                    _selectedDate.value.toString().substring(0, 10),
+                    'Fonctionnalités',
                     style: GoogleFonts.roboto(
-                      fontSize: isDesktop ? 30 : 25,
+                      fontSize: isLargeScreen ? 22 : 20,
                       fontWeight: FontWeight.w600,
+                      color: const Color(0xFF2D3748),
                     ),
                   ),
                 ),
 
-                // Éléments du tableau de bord
+                // Grille des éléments du tableau de bord avec design amélioré
                 Padding(
-                  padding: EdgeInsets.all(isDesktop ? 32 : 16),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: isLargeScreen ? 30 : (isMediumScreen ? 20 : 16),
+                  ),
                   child: GridView.count(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    crossAxisCount: isDesktop
+                    crossAxisCount: isLargeScreen
                         ? 4
-                        : 2, // Ajuster les colonnes en fonction de la taille de l'écran
-                    crossAxisSpacing: isDesktop ? 24 : 16,
-                    mainAxisSpacing: isDesktop ? 24 : 16,
+                        : isMediumScreen
+                            ? 3
+                            : 2,
+                    crossAxisSpacing: isLargeScreen ? 20 : 16,
+                    mainAxisSpacing: isLargeScreen ? 20 : 16,
+                    childAspectRatio: 0.85,
                     children: [
-                         buildDashboardItem(
+                      _buildDashboardItem(
                         context,
-                        'Suivi des PAUS',
+                        'Suivi des PAUS et plans de lotissement',
                         'lib/assets/icons/me/isens_thumb-removebg-preview.png',
+                        Color(0xFF48BB78),
                         () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const SigWeb(
-                                  title:
-                                      'Sig web'), // Ajouter le paramètre de titre requis
+                              builder: (context) => const SigWeb(title: 'Sig web'),
                             ),
                           );
                         },
                       ),
-                      buildDashboardItem(
+                      _buildDashboardItem(
                         context,
                         'Permis de construire',
                         'lib/assets/icons/me/permis_debati-removebg-preview.png',
+                        Color(0xFF4299E1),
                         () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  MapDrawingPage(), // Ajouter le paramètre de titre requis
+                              builder: (context) => MapDrawingPage(),
                             ),
                           );
                         },
                       ),
-                       buildDashboardItem(
+                    
+                      _buildDashboardItem(
                         context,
-                        'Suivi des plans de lotissement',
-                        'lib/assets/icons/me/realisations-16918-removebg-preview.png',
-                        () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  CombinedMapPage(), // Ajouter le paramètre de titre requis
-                            ),
-                          );
-                        },
-                      ),
-                        buildDashboardItem(
-                        context,
-                        'Ajouter tiff ',
+                        'Ajouter tiff',
                         'lib/assets/icons/me/ajout des images.png',
+                        Color(0xFF9F7AEA),
                         () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  AddHtmlFormPage(), // Ajouter le paramètre de titre requis
+                              builder: (context) => AddHtmlFormPage(),
                             ),
                           );
                         },
                       ),
-                      buildDashboardItem(
+                      _buildDashboardItem(
                         context,
                         'Voir les actualités',
                         'lib/assets/icons/me/news1.gif',
+                        Color(0xFFED64A6),
                         () {
                           Navigator.push(
                             context,
@@ -227,10 +323,11 @@ class _AgentDashboardState extends State<AgentDashboard> {
                           );
                         },
                       ),
-                      buildDashboardItem(
+                      _buildDashboardItem(
                         context,
                         'Page des réclamations',
                         'lib/assets/icons/me/admin4.gif',
+                        Color(0xFFECC94B),
                         () {
                           Navigator.push(
                             context,
@@ -240,37 +337,38 @@ class _AgentDashboardState extends State<AgentDashboard> {
                           );
                         },
                       ),
-                      buildDashboardItem(
+                      _buildDashboardItem(
                         context,
-                        'Liste des demandes de permis de construire',
+                        'Liste des demandes de permis',
                         'lib/assets/icons/me/admin1.gif',
+                        Color(0xFF4FD1C5),
                         () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  HousingApplicationListPage(),
+                              builder: (context) => HousingApplicationListPage(),
                             ),
                           );
                         },
                       ),
-                      buildDashboardItem(
-                        context,
-                        'Ajouter une actualité',
-                        'lib/assets/icons/me/news.gif',
-                        () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const AddNewsScreen(),
-                            ),
-                          );
-                        },
-                      ),
-                   
+                      // _buildDashboardItem(
+                      //   context,
+                      //   'Ajouter une actualité',
+                      //   'lib/assets/icons/me/news.gif',
+                      //   Color(0xFF667EEA),
+                      //   () {
+                      //     Navigator.push(
+                      //       context,
+                      //       MaterialPageRoute(
+                      //         builder: (context) => const AddNewsScreen(),
+                      //       ),
+                      //     );
+                      //   },
+                      // ),
                     ],
                   ),
                 ),
+                SizedBox(height: 30),
               ],
             ),
           );
@@ -279,43 +377,52 @@ class _AgentDashboardState extends State<AgentDashboard> {
     );
   }
 
-  Widget buildDashboardItem(BuildContext context, String title, String iconPath,
-      VoidCallback onPressed) {
-    return GestureDetector(
-      onTap: onPressed,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
-              spreadRadius: 2,
-              blurRadius: 5,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              iconPath,
-              width: 70,
-              height: 70,
-            ),
-            const SizedBox(height: 10),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: MediaQuery.of(context).size.width > 600
-                    ? 18
-                    : 16, // Ajuster la taille de la police pour la réactivité
-                fontWeight: FontWeight.bold,
+  Widget _buildDashboardItem(BuildContext context, String title, String iconPath,
+      Color color, VoidCallback onPressed) {
+    return Card(
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Image.asset(
+                  iconPath,
+                  width: 32,
+                  height: 32,
+                  color: color,
+                ),
               ),
-            ),
-          ],
+              SizedBox(height: 12),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.roboto(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color: const Color(0xFF2D3748),
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
         ),
       ),
     );

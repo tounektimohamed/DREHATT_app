@@ -1,5 +1,5 @@
 name: DREHATT_app
-description: Medication Reminder Mobile Application
+description: 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -36,17 +36,17 @@ dependencies:
     sdk: flutter
   intl: any
 
-
+  intl_utils: ^2.6.2
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-  firebase_auth: ^5.0.0
-  firebase_core : ^3.0.0
+  firebase_auth: ^6.0.2
+  firebase_core : ^4.1.0
  # google_fonts: ^6.2.1
   font_awesome_flutter: ^10.5.0
   google_sign_in: ^6.2.1
   flutter_holo_date_picker: ^2.0.0
-  cloud_firestore: ^5.0.0
+  cloud_firestore: ^6.0.1
   timeline_tile: ^2.0.0
   flutter_timeline_calendar: ^1.0.9
   shimmer: ^3.0.0
@@ -56,18 +56,18 @@ dependencies:
   floating_snackbar: ^1.0.3+1
   geolocator: ^14.0.2
   maps_launcher: ^3.0.0+1
-  syncfusion_flutter_charts: ^30.1.40
+  syncfusion_flutter_charts: ^31.1.17
   settings_ui: ^2.0.2
   flutter_svg: ^2.0.10+1
   day_night_time_picker: 
   text_scroll: ^0.2.0
-  alarm: ^4.1.1
+  alarm: ^5.1.4
   build_runner: ^2.4.7
   shared_preferences: ^2.2.2
   
   # awesome_notifications: any
   localstorage: ^6.0.0
-  firebase_storage: ^12.0.0
+  firebase_storage: ^13.0.1
   url_launcher: ^6.1.12
   multi_dropdown: ^3.0.1
   weekday_selector:
@@ -101,8 +101,8 @@ dependencies:
   flutter_widget_from_html: ^0.17.0
   webview_flutter: ^4.0.1
   flutter_html: ^3.0.0-beta.2
-  mockito: ^5.4.5
-  firebase_storage_mocks: ^0.7.0
+  mockito: ^5.4.4
+  firebase_storage_mocks: ^0.8.0+1
   integration_test:
     sdk: flutter
 dev_dependencies:

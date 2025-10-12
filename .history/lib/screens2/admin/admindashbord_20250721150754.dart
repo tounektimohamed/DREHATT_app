@@ -164,7 +164,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                     children: [
                        buildDashboardItem(
                         context,
-                        'Suivi des PAUS',
+                        'Suivi des PAUS et plans de lotissement',
                         'lib/assets/icons/me/isens_thumb-removebg-preview.png',
                         () {
                           Navigator.push(
@@ -191,20 +191,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                           );
                         },
                       ),
-                       buildDashboardItem(
-                        context,
-                        'Suivi des plans de lotissement',
-                        'lib/assets/icons/me/realisations-16918-removebg-preview.png',
-                        () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  CombinedMapPage(), // Ajouter le paramètre de titre requis
-                            ),
-                          );
-                        },
-                      ),
+                      
                         buildDashboardItem(
                         context,
                         'Ajouter tiff ',

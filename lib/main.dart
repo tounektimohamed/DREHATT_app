@@ -19,11 +19,9 @@ void main() async {
   } catch (e) {
     print('Error initializing Firebase: $e');
   }
-  await Alarm.init(showDebugLogs: true);
+  await Alarm.init();
   runApp(const MyApp());
 }
-
-
 
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
