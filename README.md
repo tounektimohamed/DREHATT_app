@@ -1,5 +1,5 @@
 <div align="center">
-<img src="https://raw.githubusercontent.com/tounektimohamed/DREHATT_app/main/.github/assets/banner.png" width="100%" alt="DREHATT banner" />
+<img src="https://raw.githubusercontent.com/tounektimohamed/DREHATT_app/Finalized-app/.github/assets/banner.png" width="100%" alt="DREHATT banner" />
 
 <br>
 
@@ -26,7 +26,6 @@
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
-- [Live Demo](#live-demo)
 - [Contributing](#contributing)
 - [License](#license)
 - [Contact](#contact)
@@ -47,7 +46,7 @@
 ## 📸 Preview
 
 <p align="center">
-<img src="https://raw.githubusercontent.com/tounektimohamed/DREHATT_app/main/.github/assets/banner.png" width="80%" alt="Preview" />
+<img src="https://raw.githubusercontent.com/tounektimohamed/DREHATT_app/Finalized-app/.github/assets/banner.png" width="80%" alt="Preview" />
 </p>
 
 ## 🛠️ Tech Stack
@@ -96,10 +95,6 @@ flutter run
 ```
 
 > Requires the [Flutter SDK](https://docs.flutter.dev/get-started/install) (stable channel).
-
-## 🌐 Live Demo
-
-The project is deployed and reachable at **[drehatt-app.vercel.app](https://drehatt-app.vercel.app)**.
 
 ## 🤝 Contributing
 
